@@ -1,6 +1,10 @@
+import Header from "../../components/Header"
+
 const Dashboard = (): JSX.Element => {
   return (
-    <h1>Hello world</h1>
+    <>
+      <Header />
+    </>
   )
 };
 
