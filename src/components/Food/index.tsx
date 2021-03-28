@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { FiEdit3, FiTrash } from 'react-icons/fi';
+import api from '../../services/api';
 
 import { Container } from './styles';
 
@@ -16,8 +18,19 @@ interface FoodProps {
 }
 
 const Food = ({ food }: FoodProps): JSX.Element => {
+    const [isAvailable, setIsAvailable] = useState(food.available);
+
+    const toggleAvailable = async (food: FoodInterface) => {
+        await api.put(`/foods/${food.id}`, {
+            ...food,
+            available: !isAvailable,
+        });
+
+        setIsAvailable(!isAvailable);
+    }
+
     return (
-        <Container>
+        <Container available={isAvailable}>
             <header>
                 <img src={food.image} alt={food.name} />
             </header>
@@ -50,14 +63,14 @@ const Food = ({ food }: FoodProps): JSX.Element => {
                 </div>
 
                 <div className="availability-container">
-                    <p>Disponível</p>
+                    <p>{isAvailable ? 'Disponível' : 'Indisponível'}</p>
 
                     <label htmlFor={`available-switch-${food.id}`} className="switch">
                         <input
                             id={`available-switch-${food.id}`}
                             type="checkbox"
-                            checked
-                            // onChange={this.toggleAvailable}
+                            checked={isAvailable}
+                            onChange={() => toggleAvailable(food)}
                             data-testid={`change-status-food-${food.id}`}
                         />
                         <span className="slider" />
