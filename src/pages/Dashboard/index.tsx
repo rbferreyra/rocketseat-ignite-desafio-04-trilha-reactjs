@@ -26,17 +26,27 @@ const Dashboard = (): JSX.Element => {
     loadFoods();
   }, []);
 
+  const handleDeleteFood = async (id: number) => {
+
+    await api.delete(`/foods/${id}`);
+
+    const foodsFiltered = foods.filter(food => food.id !== id);
+
+    setFoods(foodsFiltered);
+  }
+
   return (
     <>
       <Header />
       <FoodsContainer data-testid="foods-list">
-      {foods &&
-            foods.map(food => (
-              <Food
-                key={food.id}
-                food={food}
-              />
-            ))}
+        {foods &&
+          foods.map(food => (
+            <Food
+              key={food.id}
+              food={food}
+              handleDelete={() => handleDeleteFood(food.id)}
+            />
+          ))}
       </FoodsContainer>
     </>
   )

@@ -14,10 +14,11 @@ interface FoodInterface {
 }
 
 interface FoodProps {
-    food: FoodInterface
+    food: FoodInterface,
+    handleDelete: (id: number) => void
 }
 
-const Food = ({ food }: FoodProps): JSX.Element => {
+const Food = ({ food, handleDelete }: FoodProps): JSX.Element => {
     const [isAvailable, setIsAvailable] = useState(food.available);
 
     const toggleAvailable = async (food: FoodInterface) => {
@@ -55,7 +56,7 @@ const Food = ({ food }: FoodProps): JSX.Element => {
                     <button
                         type="button"
                         className="icon"
-                        // onClick={() => handleDelete(food.id)}
+                        onClick={() => handleDelete(food.id)}
                         data-testid={`remove-food-${food.id}`}
                     >
                         <FiTrash size={20} />
