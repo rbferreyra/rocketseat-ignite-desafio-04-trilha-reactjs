@@ -19,7 +19,7 @@ interface FoodProps {
 }
 
 const Food = ({ food, handleDelete }: FoodProps): JSX.Element => {
-    const [isAvailable, setIsAvailable] = useState(food.available);
+    const [isAvailable, setIsAvailable] = useState<boolean>(food.available);
 
     const toggleAvailable = async (food: FoodInterface) => {
         await api.put(`/foods/${food.id}`, {

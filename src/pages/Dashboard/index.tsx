@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Food from "../../components/Food";
 import Header from "../../components/Header"
+import ModalAddFood from "../../components/ModalAddFood";
 import api from "../../services/api";
 import { FoodsContainer } from "./styles";
 
@@ -15,6 +16,7 @@ interface FoodInterface {
 
 const Dashboard = (): JSX.Element => {
   const [foods, setFoods] = useState<FoodInterface[]>([]);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     async function loadFoods() {
@@ -35,9 +37,31 @@ const Dashboard = (): JSX.Element => {
     setFoods(foodsFiltered);
   }
 
+  const toggleModal = () => {
+    setModalOpen(!modalOpen);
+  }
+
+  const handleAddFood = async (food: FoodInterface) => {
+    try {
+      const response = await api.post('/foods', {
+        ...food,
+        available: true,
+      });
+
+      setFoods([...foods, response.data]);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   return (
     <>
-      <Header />
+      <Header openModal={toggleModal} />
+      <ModalAddFood
+        isOpen={modalOpen}
+        setIsOpen={toggleModal}
+        handleAddFood={handleAddFood}
+      />
       <FoodsContainer data-testid="foods-list">
         {foods &&
           foods.map(food => (
