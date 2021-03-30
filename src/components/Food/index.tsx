@@ -16,9 +16,10 @@ interface FoodInterface {
 interface FoodProps {
     food: FoodInterface,
     handleDelete: (id: number) => void
+    handleEditFood: (food: FoodInterface) => void
 }
 
-const Food = ({ food, handleDelete }: FoodProps): JSX.Element => {
+const Food = ({ food, handleDelete, handleEditFood }: FoodProps): JSX.Element => {
     const [isAvailable, setIsAvailable] = useState<boolean>(food.available);
 
     const toggleAvailable = async (food: FoodInterface) => {
@@ -29,6 +30,10 @@ const Food = ({ food, handleDelete }: FoodProps): JSX.Element => {
 
         setIsAvailable(!isAvailable);
     }
+
+    const setEditingFood = (food: FoodInterface) => {
+        handleEditFood(food);
+      }    
 
     return (
         <Container available={isAvailable}>
@@ -47,7 +52,7 @@ const Food = ({ food, handleDelete }: FoodProps): JSX.Element => {
                     <button
                         type="button"
                         className="icon"
-                        // onClick={this.setEditingFood}
+                        onClick={() => setEditingFood(food)}
                         data-testid={`edit-food-${food.id}`}
                     >
                         <FiEdit3 size={20} />

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Food from "../../components/Food";
 import Header from "../../components/Header"
 import ModalAddFood from "../../components/ModalAddFood";
+import ModalEditFood from "../../components/ModalEditFood";
 import api from "../../services/api";
 import { FoodsContainer } from "./styles";
 
@@ -17,6 +18,8 @@ interface FoodInterface {
 const Dashboard = (): JSX.Element => {
   const [foods, setFoods] = useState<FoodInterface[]>([]);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
+  const [editingFood, setEditingFood] = useState<FoodInterface>({} as FoodInterface);
 
   useEffect(() => {
     async function loadFoods() {
@@ -54,6 +57,32 @@ const Dashboard = (): JSX.Element => {
     }
   }
 
+  const toggleEditModal = () => {
+    setEditModalOpen(!editModalOpen);
+  }  
+
+  const handleUpdateFood = async (food: FoodInterface) => {
+    try {
+      const foodUpdated = await api.put(
+        `/foods/${editingFood.id}`,
+        { ...editingFood, ...food },
+      );
+
+      const foodsUpdated = foods.map(f =>
+        f.id !== foodUpdated.data.id ? f : foodUpdated.data,
+      );
+
+      setFoods(foodsUpdated);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  const handleEditFood = (food: FoodInterface) => {
+    setEditingFood(food);
+    setEditModalOpen(true);
+  }
+
   return (
     <>
       <Header openModal={toggleModal} />
@@ -62,6 +91,12 @@ const Dashboard = (): JSX.Element => {
         setIsOpen={toggleModal}
         handleAddFood={handleAddFood}
       />
+      <ModalEditFood
+        isOpen={editModalOpen}
+        setIsOpen={toggleEditModal}
+        handleUpdateFood={handleUpdateFood}
+        editingFood={editingFood}
+      />
       <FoodsContainer data-testid="foods-list">
         {foods &&
           foods.map(food => (
@@ -69,6 +104,7 @@ const Dashboard = (): JSX.Element => {
               key={food.id}
               food={food}
               handleDelete={() => handleDeleteFood(food.id)}
+              handleEditFood={() => handleEditFood(food)}
             />
           ))}
       </FoodsContainer>
